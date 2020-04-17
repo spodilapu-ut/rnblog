@@ -1,13 +1,19 @@
 import React, { useContext } from "react";
-import { View, Text, StyleSheet, FlatList, Button } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Button,
+  TouchableOpacity,
+} from "react-native";
 import { Context } from "../context/BlogContext";
 import { Feather } from "@expo/vector-icons";
 
-const IndexScreen = () => {
-  const { state, addBlogPost } = useContext(Context);
+const IndexScreen = ({ navigation }) => {
+  const { state, addBlogPost, deleteBlogPost } = useContext(Context);
   return (
     <View>
-      <Button title="Add Post" onPress={addBlogPost} />
       <FlatList
         data={state}
         keyExtractor={(blogPost) => {
@@ -15,17 +21,33 @@ const IndexScreen = () => {
         }}
         renderItem={({ item }) => {
           return (
-            <View style={styles.row}>
-              <Text key={item.id} style={styles.titleStyle}>
-                {item.title}
-              </Text>
-              <Feather name="trash" style={styles.iconStyle}></Feather>
-            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Show", { id: item.id })}
+            >
+              <View style={styles.row}>
+                <Text key={item.id} style={styles.titleStyle}>
+                  {item.title} - {item.id}
+                </Text>
+                <TouchableOpacity onPress={() => deleteBlogPost(item.id)}>
+                  Add
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
           );
         }}
       />
     </View>
   );
+};
+
+IndexScreen.navigationOptions = ({ navigation }) => {
+  return {
+    headerRight: (
+      <TouchableOpacity onPress={() => navigation.navigate("Create")}>
+        <Feather name="plus" size={30} />
+      </TouchableOpacity>
+    ),
+  };
 };
 
 const styles = StyleSheet.create({
